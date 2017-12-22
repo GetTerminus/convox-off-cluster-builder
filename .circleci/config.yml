@@ -1,0 +1,10 @@
+version: 2.0
+jobs:
+  build:
+    docker:
+      - image: getterminus/cci-build-golang:20171218
+    steps:
+      - checkout
+      - run:
+          name: Ginkgo Tests
+          command: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --progress
