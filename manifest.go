@@ -4,11 +4,13 @@ import "github.com/convox/rack/manifest1"
 
 type Manifest interface {
 	Processes() []string
+	ProcessHasBuild(process string) bool
+	ProcessBuildPath(process string) (string, error)
 }
 
 type V1Manifest manifest1.Manifest
 
-func LoadFile(path string) (Manifest, error) {
+func LoadFileV1(path string) (Manifest, error) {
 	man, err := manifest1.LoadFile(path)
 
 	if err != nil {
@@ -26,4 +28,9 @@ func (m *V1Manifest) Processes() []string {
 	}
 
 	return procs
+}
+
+func (m *V1Manifest) ProcessHasBuild(process string) bool {
+	build := m.Services[process].Build
+
 }
