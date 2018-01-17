@@ -1,0 +1,10 @@
+.env
+.git
+coverage.txt
+docker-compose.yml
+cmd/changes/changes
+cmd/convox/convox
+provider/aws/lambda/formation/main
+provider/aws/lambda/formation/lambda.zip
+monitor
+rack
