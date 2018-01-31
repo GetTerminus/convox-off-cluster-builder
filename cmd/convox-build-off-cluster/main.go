@@ -11,9 +11,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/convox/rack/manifest"
 	"github.com/convox/rack/manifest1"
 	"github.com/convox/rack/structs"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 
 	flag.Parse()
 
+	if descriptionFlag != nil {
+
+	}
 	if *composeFileName == "" {
 		flag.Usage()
 		log.Fatal("missing compose-file")
@@ -40,6 +44,16 @@ func main() {
 		log.Fatal("missing app")
 	}
 
+	data, err := ioutil.ReadFile(*composeFileName)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	testM, err := manifest.Load(data, manifest.Environment{"UNDERPANTS_CLIENT_ID": "underpants", "UNDERPANTS_CLIENT_SECRET": "unknown", "JWT_SIGNING_SECRET": "unknown"})
+	if testM != nil {
+
+	}
 	m, err := manifest1.LoadFile(*composeFileName)
 
 	if err != nil {
@@ -52,6 +66,8 @@ func main() {
 
 	output := manifest1.NewOutput(false)
 
+	testOpt := manifest.BuildOptions{}
+	testM.Build("local-build", appName, testOpt)
 	opt := manifest1.BuildOptions{}
 	buildStream := output.Stream("local-build")
 	err = m.Build(".", appName, buildStream, opt)
@@ -65,10 +81,26 @@ func main() {
 		log.Fatal(err)
 	}
 
+	testDocker, err := testM.BuildDockerfile(".", appName)
+	if testDocker != nil {
+
+	}
+	testBuildSources, err := testM.BuildSources(".", appName)
+	if testBuildSources != nil {
+
+	}
 	exportStream := output.Stream("export")
 	imagesFile, err := Export(m, appName, exportStream, buildID)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	testJsonBytes, err := GenerateBuildJsonFile2(testM, appName, buildID, description)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if testJsonBytes != nil {
+
 	}
 
 	buildJsonBytes, err := GenerateBuildJsonFile(m, appName, buildID, description)
@@ -185,6 +217,33 @@ func TagForExport(m *manifest1.Manifest, appName string, s manifest1.Stream, bui
 	}
 
 	return nil
+}
+
+func GenerateBuildJsonFile2(m *manifest.Manifest, appName, buildID, description string) ([]byte, error) {
+	if m == nil {
+		return nil, fmt.Errorf("m cannot be nil")
+	}
+
+	b := &structs.Build{
+		Id:          buildID,
+		App:         appName,
+		Description: description,
+		Release:     buildID,
+	}
+
+	manifestYaml, err := yaml.Marshal(m)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	b.Manifest = string(manifestYaml)
+
+	rez, err := json.Marshal(b)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return rez, nil
 }
 
 func GenerateBuildJsonFile(m *manifest1.Manifest, appName, buildID, description string) ([]byte, error) {
