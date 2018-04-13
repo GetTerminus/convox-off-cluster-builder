@@ -16,8 +16,14 @@
 [[projects]]
   branch = "master"
   name = "github.com/convox/rack"
-  packages = ["changes","manifest1","sync"]
+  packages = ["changes","manifest1","structs","sync"]
   revision = "7c971d614ed967464f7fe94109f1eb37243205ce"
+
+[[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/docker/docker"
@@ -74,6 +80,24 @@
   version = "v1.3.0"
 
 [[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  revision = "facf9a85c22f48d2f52f2380e4efce1768749a89"
+  version = "v0.1"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = ["assert","mock"]
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/twmb/algoimpl"
   packages = ["go/graph","go/graph/lite"]
@@ -112,6 +136,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5b6e7539fa5bc3835c72ef4d3063309cd7a81b7995d501385c0ec847cee99eee"
+  inputs-digest = "2c6965a28d8a99cdb387ce47310f83ab081426b94780068f8d749bceebaf83c9"
   solver-name = "gps-cdcl"
   solver-version = 1
