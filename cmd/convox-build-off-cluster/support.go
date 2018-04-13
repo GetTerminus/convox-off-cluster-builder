@@ -20,21 +20,6 @@ import (
 // SaveManifest renames the old docker-compose.convox.yml file
 // to a timestamped file and writes the new, modified file to disk
 func SaveManifest(fileName string, data []byte) error {
-	// var timeStamp string
-
-	// // Getting the current date/time
-	// timeStamp = time.Now().Format("01012006090945")
-	// // Get the extension; could be "yml" or "yaml"
-	// parts := strings.Split(fileName, ".")
-	// // Last element is extension
-	// extension := "." + parts[len(parts)-1]
-	// // Get the basename of the filename
-	// baseName := strings.Split(fileName, extension)[0]
-	// // Assemble the new file name
-	// newFile := fmt.Sprintf("%s_%s%s", baseName, timeStamp, extension)
-	// // Rename the old file
-	// os.Rename(fileName, newFile)
-	// // Write the new structured file to disk
 	return ioutil.WriteFile(fileName, data, 0644)
 }
 

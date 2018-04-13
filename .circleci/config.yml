@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /go/src/github.com/GetTerminus/convox-off-cluster-builder
     docker:
-      - image: getterminus/cci-build-golang:20171218
+      - image: getterminus/cci-build-golang:20180319a
     steps:
       - checkout
       - run:
