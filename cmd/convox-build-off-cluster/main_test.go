@@ -19,7 +19,9 @@ func TestGetGitHash(t *testing.T) {
 }
 
 func TestGetRepo(t *testing.T) {
-	if GetRepo(&"1234567890", &"us-east-2") == "" {
+	account := "1234567890"
+	region := "us-east-2"
+	if GetRepo(&account, &region) == "" {
 		t.Error("expected a repo. got something different")
 	}
 }

@@ -102,7 +102,7 @@ func main() {
 			e := err.(*os.PathError)
 			fmt.Printf("While trying to %s '%s': Error: %s\n", e.Op, e.Path, e.Err)
 		default:
-			fmt.Printf("Error: %#s\n", err.Error())
+			fmt.Printf("Error: %s\n", err.Error())
 		}
 
 		log.Fatal(err)
