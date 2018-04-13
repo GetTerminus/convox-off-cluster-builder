@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -27,6 +28,7 @@ func TestGetRepo(t *testing.T) {
 }
 
 func TestGetRegion(t *testing.T) {
+	os.Setenv("AWS_REGION", "us-east-1")
 	if GetRegion() == "" {
 		t.Error("expected whatever but not nothing")
 	}
