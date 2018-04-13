@@ -9,4 +9,5 @@ jobs:
       - run:
           name: Ginkgo Tests
           command: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --progress
+      - run: touch coverage.txt; find . -name *.coverprofile | xargs -l cat >> coverage.txt
       - run: bash <(curl -s https://codecov.io/bash)
