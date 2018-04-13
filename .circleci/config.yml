@@ -12,7 +12,7 @@ jobs:
       - run: pwd
       - run: ls
       - run: ls cmd/convox-build-off-cluster/
-      - run: find . -name *.coverprofile | xargs -l cat
+      - run: find . -name *.coverprofile | xargs -l 
       - run: touch coverage.txt; find . -name *.coverprofile | xargs -l cat >> coverage.txt
       - run: cat coverage.txt
       - run: bash <(curl -s https://codecov.io/bash)
