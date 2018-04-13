@@ -6,7 +6,7 @@ import (
 )
 
 func TestRunCommand(t *testing.T) {
-	if RunCommand("ls -l") == "" {
+	if RunCommand("ls -l", true) == "" {
 		fmt.Printf("Stuff went wrong")
 		t.Error("expected string (inverted logic now)")
 	}
