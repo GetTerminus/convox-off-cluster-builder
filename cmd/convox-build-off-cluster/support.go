@@ -97,6 +97,7 @@ func RunCommand(cmd string, quiet bool) string {
 	result, err := runCommand(cmd)
 	if err != nil {
 		fmt.Errorf("ERROR (RunCommand): %s\n", err)
+		return ""
 	}
 	return result
 }

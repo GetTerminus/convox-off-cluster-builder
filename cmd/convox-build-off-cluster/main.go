@@ -50,7 +50,7 @@ func main() {
 	inputComposeFileName := *inputComposeFileNameFlag
 	outputComposeFileName := *outputComposeFileNameFlag
 	description := *descriptionFlag
-	region := *regionFlag
+	// region := *regionFlag
 	repo := *repoNameFlag
 	gitSHA := *gitSHAFlag
 
@@ -80,19 +80,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Make sure we login to AWS ECR as the token is only good for 12 hrs
-	awsLogin := fmt.Sprintf("aws ecr get-login --no-include-email --region %s", region)
-	loginCmd, err := runCommand(awsLogin)
-	if err != nil {
-		flag.Usage()
-		log.Fatal(err)
-	}
-	RunCommand(loginCmd, true)
+	//
+	// At this point in time we are done checking everything,
+	// let's get to work
+	//
 
-	// Creating a new Manifest
+	// Creating a new Manifest and build stream
 	output := manifest1.NewOutput(false)
-	opt := manifest1.BuildOptions{}
 
+	// awsLoginStream := output.Stream("aws-login")
+	// Make sure we login to AWS ECR as the token is only good for 12 hrs
+	// awsLoginCmd := fmt.Sprintf("ecr get-login --no-include-email --region %s", region)
+
+	// fmt.Printf("awsLogin: %s\n", awsLoginCmd)
+	// if err := manifest1.DefaultRunner.Run(awsLoginStream, exec.Command("aws", strings.Fields(awsLoginCmd)...), manifest1.RunnerOptions{Verbose: true}); err != nil {
+	// 	log.Fatalf("export error: %s", err)
+	// }
+
+	// dockerLogin, err := runCommand("aws " + awsLoginCmd)
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+
+	// if err := manifest1.DefaultRunner.Run(awsLoginStream, exec.Command(dockerLogin), manifest1.RunnerOptions{Verbose: true}); err != nil {
+	// 	log.Fatalf("export error: %s", err)
+	// }
+
+	opt := manifest1.BuildOptions{}
 	buildStream := output.Stream("local-build")
 
 	// Cycling through all service descriptions
@@ -117,10 +131,10 @@ func main() {
 
 		// Creating the proper tagCmd
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
-		tagCmd := fmt.Sprintf("docker tag %s/%s:%s %s", appName, key, "latest", imageName)
+		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
 		// Creating the proper pushCmd
 		// pushCmd := fmt.Sprintf("docker push %s", imageName)
-		pushCmd := fmt.Sprintf("push %s", imageName)
+		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
 
 		// Manipulating the service for no Build information but Image information
 		// If there is no image in the manifest, create an image and safe it
