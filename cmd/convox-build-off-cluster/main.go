@@ -50,7 +50,6 @@ func main() {
 	inputComposeFileName := *inputComposeFileNameFlag
 	outputComposeFileName := *outputComposeFileNameFlag
 	description := *descriptionFlag
-	// region := *regionFlag
 	repo := *repoNameFlag
 	gitSHA := *gitSHAFlag
 
@@ -88,24 +87,6 @@ func main() {
 	// Creating a new Manifest and build stream
 	output := manifest1.NewOutput(false)
 
-	// awsLoginStream := output.Stream("aws-login")
-	// Make sure we login to AWS ECR as the token is only good for 12 hrs
-	// awsLoginCmd := fmt.Sprintf("ecr get-login --no-include-email --region %s", region)
-
-	// fmt.Printf("awsLogin: %s\n", awsLoginCmd)
-	// if err := manifest1.DefaultRunner.Run(awsLoginStream, exec.Command("aws", strings.Fields(awsLoginCmd)...), manifest1.RunnerOptions{Verbose: true}); err != nil {
-	// 	log.Fatalf("export error: %s", err)
-	// }
-
-	// dockerLogin, err := runCommand("aws " + awsLoginCmd)
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
-
-	// if err := manifest1.DefaultRunner.Run(awsLoginStream, exec.Command(dockerLogin), manifest1.RunnerOptions{Verbose: true}); err != nil {
-	// 	log.Fatalf("export error: %s", err)
-	// }
-
 	opt := manifest1.BuildOptions{}
 	buildStream := output.Stream("local-build")
 
@@ -133,7 +114,6 @@ func main() {
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
 		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
 		// Creating the proper pushCmd
-		// pushCmd := fmt.Sprintf("docker push %s", imageName)
 		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
 
 		// Manipulating the service for no Build information but Image information
