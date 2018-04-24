@@ -22,17 +22,16 @@ type myType struct {
 
 func main() {
 	var inputComposeFileNameFlag = flag.String("compose-file", GetDefaultFile(), "the path to the docker-compose file to build")
-	var outputComposeFileNameFlag = flag.String("output-compose-file", GetDefaultFile(), "file to write new compose file to.")
+	var outputComposeFileNameFlag = flag.String("output-compose-file", GetDefaultFile(), "file to write new compose file to")
 	var appNameFlag = flag.String("app", "", "the name of the service")
 	var buildIDFlag = flag.String("build-id", GetGitHash(), "the build ID to identify this build")
 	var descriptionFlag = flag.String("description", defaultDescription, "(optional) a description of this build")
 
 	// adding a few more flags
-	var defaultAccountFlag = flag.String("defaultAccount", GetAccount(), "Account where the image should be pushed to.")
+	var defaultAccountFlag = flag.String("defaultAccount", GetAccount(), "Account where the image should be pushed to")
 	var regionFlag = flag.String("region", GetRegion(), "This is the region of the repo")
 	var gitSHAFlag = flag.String("gitsha", "", "Please specify a git SHA to tag the image with")
 	var repoNameFlag = flag.String("repo", GetRepo(defaultAccountFlag, regionFlag), "The REPO to be used")
-
 	// Overwriting the default flag.Usage() function as we need to add some extra information
 	// about ENV variables that need to be set accordingly
 	// Any call to the program with -h or invalid parameters will show that information

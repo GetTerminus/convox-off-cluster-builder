@@ -15,7 +15,7 @@ import (
 )
 
 //
-// Here are all the extra functions that are used in the main function
+// Here are all the extra functions that are used in the main.go source file
 //
 // SaveManifest renames the old docker-compose.convox.yml file
 // to a timestamped file and writes the new, modified file to disk
