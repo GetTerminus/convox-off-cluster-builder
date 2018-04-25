@@ -107,6 +107,10 @@ func main() {
 
 	for key, service := range m.Services {
 		// Creating the proper image name for tagging and pushing
+		// repo: offclusterbuild
+		// appName: jwtsync
+		// key: appname
+		// imageName = "offclusterbuild:jwtsync_<key+gitSHA>"
 		imageName := fmt.Sprintf("%s:%s_%s", repo, appName, key+"_"+gitSHA)
 
 		// Creating the proper tagCmd
