@@ -107,7 +107,6 @@ func main() {
 
 	for key, service := range m.Services {
 		// Creating the proper image name for tagging and pushing
-		// imageName := fmt.Sprintf("%s/%s:%s", repo, appName, key+"_"+gitSHA)
 		imageName := fmt.Sprintf("%s:%s_%s", repo, appName, key+"_"+gitSHA)
 
 		// Creating the proper tagCmd
