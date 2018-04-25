@@ -174,6 +174,9 @@ func (v *ServiceHealth) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	switch t := w.(type) {
 	case map[interface{}]interface{}:
+		if w, ok := t["grace"].(int); ok {
+			v.Grace = w
+		}
 		if w, ok := t["path"].(string); ok {
 			v.Path = w
 		}
@@ -284,6 +287,9 @@ func (v *ServiceScale) UnmarshalYAML(unmarshal func(interface{}) error) error {
 				return err
 			}
 			v.Count = &c
+		}
+		if w, ok := t["cpu"].(int); ok {
+			v.Cpu = w
 		}
 		if w, ok := t["memory"].(int); ok {
 			v.Memory = w

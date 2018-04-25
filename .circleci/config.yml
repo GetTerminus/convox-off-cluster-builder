@@ -3,9 +3,11 @@ jobs:
   build:
     working_directory: /go/src/github.com/GetTerminus/convox-off-cluster-builder
     docker:
-      - image: getterminus/cci-build-golang:20171218
+      - image: getterminus/cci-build-golang:20180319a
     steps:
       - checkout
       - run:
           name: Ginkgo Tests
           command: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --progress
+      - run: touch coverage.txt; find . -name "*.coverprofile" | xargs -l cat >> coverage.txt
+      - run: bash <(curl -s https://codecov.io/bash)

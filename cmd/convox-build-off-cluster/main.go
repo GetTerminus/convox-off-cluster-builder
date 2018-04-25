@@ -1,215 +1,162 @@
 package main
 
 import (
-	"archive/tar"
-	"compress/gzip"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/convox/rack/manifest1"
-	"github.com/convox/rack/structs"
 	yaml "gopkg.in/yaml.v2"
 )
 
-func main() {
+const (
+	defaultDescription = "Default description here"
+)
 
-	var composeFileName = flag.String("compose-file", "", "the path to the docker-compose file to build")
+// This is used to extract the YAML structure to save it as the new docker-compose.convox.yml file
+type myType struct {
+	Manifest string `yaml:"manifest,omitempty"`
+}
+
+func main() {
+	var inputComposeFileNameFlag = flag.String("compose-file", GetDefaultFile(), "the path to the docker-compose file to build")
+	var outputComposeFileNameFlag = flag.String("output-compose-file", GetDefaultFile(), "file to write new compose file to")
 	var appNameFlag = flag.String("app", "", "the name of the service")
-	var buildIDFlag = flag.String("build-id", "", "the build ID to identify this build")
-	var descriptionFlag = flag.String("description", "", "(optional) a description of this build")
+	var buildIDFlag = flag.String("build-id", GetGitHash(), "the build ID to identify this build")
+	var descriptionFlag = flag.String("description", defaultDescription, "(optional) a description of this build")
+
+	// adding a few more flags
+	var defaultAccountFlag = flag.String("defaultAccount", GetAccount(), "Account where the image should be pushed to")
+	var regionFlag = flag.String("region", GetRegion(), "This is the region of the repo")
+	var gitSHAFlag = flag.String("gitsha", "", "Please specify a git SHA to tag the image with")
+	var repoNameFlag = flag.String("repo", GetRepo(defaultAccountFlag, regionFlag), "The REPO to be used")
+	// Overwriting the default flag.Usage() function as we need to add some extra information
+	// about ENV variables that need to be set accordingly
+	// Any call to the program with -h or invalid parameters will show that information
+	oldFlag := flag.Usage
+	flag.Usage = func() {
+		oldFlag()
+		extraInfo()
+	}
 
 	flag.Parse()
 
-	if *composeFileName == "" {
-		flag.Usage()
-		log.Fatal("missing compose-file")
+	// Dereferencing these pointer variables
+	appName := *appNameFlag
+	buildID := *buildIDFlag
+	inputComposeFileName := *inputComposeFileNameFlag
+	outputComposeFileName := *outputComposeFileNameFlag
+	description := *descriptionFlag
+	repo := *repoNameFlag
+	gitSHA := *gitSHAFlag
+
+	// Mandatory flags to have; if any one is missing, stop
+	if repo == "" {
+		log.Printf("Please set ENV variables 'AWS_ACCOUNT' and 'AWS_REGION'")
+		log.Fatal("Stopped.")
 	}
 
-	if *appNameFlag == "" {
+	// Mandatory: Application name
+	if appName == "" {
 		flag.Usage()
-		log.Fatal("missing app")
+		log.Fatal("missing '-app <app-name>'")
 	}
 
-	if *buildIDFlag == "" {
+	// Mandatory: gitsha name
+	if gitSHA == "" {
 		flag.Usage()
-		log.Fatal("missing app")
+		log.Fatal("missing '-gitsha <git hash>'")
 	}
 
-	m, err := manifest1.LoadFile(*composeFileName)
-
+	// A few more checks
+	// Load the docker-compose.convox.yml (or differently named) config file
+	m, err := manifest1.LoadFile(inputComposeFileName)
 	if err != nil {
+		flag.Usage()
 		log.Fatal(err)
 	}
 
-	appName := *appNameFlag
-	buildID := *buildIDFlag
-	description := *descriptionFlag
+	//
+	// At this point in time we are done checking everything,
+	// let's get to work
+	//
 
+	// Creating a new Manifest and build stream
 	output := manifest1.NewOutput(false)
 
 	opt := manifest1.BuildOptions{}
 	buildStream := output.Stream("local-build")
-	err = m.Build(".", appName, buildStream, opt)
-	if err != nil {
+
+	// Cycling through all service descriptions
+	if err = m.Build(".", appName, buildStream, opt); err != nil {
+		switch (err).(type) {
+		case *os.PathError:
+			e := err.(*os.PathError)
+			fmt.Printf("While trying to %s '%s': Error: %s\n", e.Op, e.Path, e.Err)
+		default:
+			fmt.Printf("Error: %s\n", err.Error())
+		}
+
 		log.Fatal(err)
 	}
 
-	tagStream := output.Stream("tag")
-	err = TagForExport(m, appName, tagStream, buildID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Using this variable to extract YAML data ... to save it
+	var yamlMe myType
 
-	exportStream := output.Stream("export")
-	imagesFile, err := Export(m, appName, exportStream, buildID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	for key, service := range m.Services {
+		// Creating the proper image name for tagging and pushing
+		imageName := fmt.Sprintf("%s/%s:%s", repo, appName, key+"_"+gitSHA)
 
-	buildJsonBytes, err := GenerateBuildJsonFile(m, appName, buildID, description)
-	if err != nil {
-		log.Fatal(err)
-	}
+		// Creating the proper tagCmd
+		// The 'latest' tagname is from the Build process and can't be changed w/o pain
+		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
+		// Creating the proper pushCmd
+		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
 
-	err = MakeFinalPackage(imagesFile, buildJsonBytes, appName, buildID)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+		// Manipulating the service for no Build information but Image information
+		// If there is no image in the manifest, create an image and safe it
+		if service.Image == "" {
+			fmt.Println("No image tag detected, modifying manifest")
+			service.Build = manifest1.Build{}
+			service.Image = imageName
+			m.Services[key] = service
+		} else {
+			fmt.Printf("Detected image '%s', moving on without modification\n", service.Image)
+		}
 
-func MakeFinalPackage(imagesFile *os.File, buildJsonBytes []byte, appName, buildID string) error {
+		// generating the needed YAML
+		tempData, err := GenerateBuildJSONFile(m, appName, buildID, description)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	buf, err := ioutil.TempFile(".", "output_tar")
-	if err != nil {
-		return err
-	}
+		// Unmarshaling data
+		yamlErr := yaml.Unmarshal(tempData, &yamlMe)
+		if yamlErr != nil {
+			log.Fatal(yamlErr)
+		}
 
-	defer func() {
-		buf.Close()
-		os.Remove(buf.Name())
-
-		imagesFile.Close()
-		os.Remove(imagesFile.Name())
-	}()
-
-	tw := tar.NewWriter(buf)
-
-	imagesStat, err := imagesFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	hdr := &tar.Header{
-		Name:     imagesFile.Name(),
-		Mode:     int64(imagesStat.Mode()),
-		Size:     imagesStat.Size(),
-		Typeflag: tar.TypeReg,
-	}
-	if err := tw.WriteHeader(hdr); err != nil {
-		return err
-	}
-
-	_, err = io.Copy(tw, imagesFile)
-	if err != nil {
-		return err
-	}
-
-	hdr = &tar.Header{
-		Name:     "build.json",
-		Mode:     int64(imagesStat.Mode()),
-		Size:     int64(len(buildJsonBytes)),
-		Typeflag: tar.TypeReg,
-	}
-	if err := tw.WriteHeader(hdr); err != nil {
-		return err
-	}
-
-	if _, err := tw.Write(buildJsonBytes); err != nil {
-		return err
-	}
-
-	tw.Close()
-	buf.Sync()
-	buf.Seek(0, 0)
-
-	gzfile, err := os.Create(fmt.Sprintf("%s-%s.tgz", appName, buildID))
-	if err != nil {
-		return err
-	}
-	zw := gzip.NewWriter(gzfile)
-	_, err = io.Copy(zw, buf)
-	if err != nil {
-		return err
-	}
-
-	zw.Flush()
-	zw.Close()
-
-	log.Println("Output: " + gzfile.Name())
-	gzfile.Sync()
-	gzfile.Close()
-
-	return nil
-}
-
-func Export(m *manifest1.Manifest, appName string, s manifest1.Stream, buildID string) (*os.File, error) {
-	fileName := fmt.Sprintf("%s.%s.tar", appName, buildID)
-	params := []string{"save", "-o", fileName}
-
-	for _, service := range m.Services {
-		params = append(params, fmt.Sprintf("%s:%s.%s", appName, service.Name, buildID))
-	}
-
-	if err := manifest1.DefaultRunner.Run(s, manifest1.Docker(params...), manifest1.RunnerOptions{Verbose: true}); err != nil {
-		return nil, fmt.Errorf("export error: %s", err)
-	}
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
-}
-
-func TagForExport(m *manifest1.Manifest, appName string, s manifest1.Stream, buildID string) error {
-	for _, service := range m.Services {
-		if err := manifest1.DefaultRunner.Run(s, manifest1.Docker("tag", fmt.Sprintf("%s/%s:latest", appName, service.Name), fmt.Sprintf("%s:%s.%s", appName, service.Name, buildID)), manifest1.RunnerOptions{Verbose: true}); err != nil {
-			return fmt.Errorf("tag for export error: %s", err)
+		// Executing the prepared tag and push commands
+		RunCommand(tagCmd, false)
+		params := strings.Fields(pushCmd)
+		if err := manifest1.DefaultRunner.Run(buildStream, manifest1.Docker(params...), manifest1.RunnerOptions{Verbose: true}); err != nil {
+			log.Fatalf("export error: %s", err)
 		}
 	}
-
-	return nil
+	// Save the modified docker-compose.convox.yml file
+	SaveManifest(outputComposeFileName, []byte(yamlMe.Manifest))
+	os.Exit(0)
 }
 
-func GenerateBuildJsonFile(m *manifest1.Manifest, appName, buildID, description string) ([]byte, error) {
-	if m == nil {
-		return nil, fmt.Errorf("m cannot be nil")
-	}
-
-	b := &structs.Build{
-		Id:          buildID,
-		App:         appName,
-		Description: description,
-		Release:     buildID,
-	}
-
-	manifestYaml, err := yaml.Marshal(m)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	b.Manifest = string(manifestYaml)
-
-	rez, err := json.Marshal(b)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return rez, nil
+func extraInfo() {
+	x := "\n" +
+		"There are certain ENV variables that can be set to provide extra information to this program:" +
+		"\n" +
+		"AWS_REGION : specifies the region" +
+		"\n" +
+		"AWS_ACCOUNT: specifies the account to be used (Ninja/Production) by its ID" +
+		"\n\n"
+	fmt.Fprintf(os.Stderr, x)
 }
