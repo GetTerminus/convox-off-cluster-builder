@@ -107,17 +107,21 @@ func main() {
 
 	for key, service := range m.Services {
 		// Creating the proper image name for tagging and pushing
-		// repo: offclusterbuild
+		// repo: 119585928394.dkr.ecr.us-east-1.amazonaws.com/offclusterbuild
 		// appName: jwtsync
 		// key: appname
-		// imageName = "offclusterbuild:jwtsync_<key+gitSHA>"
+		// imageName = "119585928394.dkr.ecr.us-east-1.amazonaws.com/offclusterbuild:jwtsync_<key+gitSHA>"
 		imageName := fmt.Sprintf("%s:%s_%s", repo, appName, key+"_"+gitSHA)
+		fmt.Printf("imageName: %s\n", imageName)
 
 		// Creating the proper tagCmd
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
 		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
+		fmt.Printf("tagCmd: %s\n", tagCmd)
+
 		// Creating the proper pushCmd
 		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
+		fmt.Printf("pushCmd: %s\n", pushCmd)
 
 		// Manipulating the service for no Build information but Image information
 		// If there is no image in the manifest, create an image and safe it
