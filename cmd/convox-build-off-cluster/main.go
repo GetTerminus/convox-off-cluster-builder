@@ -107,11 +107,12 @@ func main() {
 
 	for key, service := range m.Services {
 		// Creating the proper image name for tagging and pushing
-		imageName := fmt.Sprintf("%s/%s:%s", repo, appName, key+"_"+gitSHA)
+		// imageName := fmt.Sprintf("%s/%s:%s", repo, appName, key+"_"+gitSHA)
+		imageName := fmt.Sprintf("%s:%s_%s", repo, appName, key+"_"+gitSHA)
 
 		// Creating the proper tagCmd
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
-		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
+		tagCmd := fmt.Sprintf("docker --config ./ tag %s:%s_%s %s", appName, key, "latest", imageName)
 		// Creating the proper pushCmd
 		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
 
