@@ -116,11 +116,11 @@ func main() {
 
 		// Creating the proper tagCmd
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
-		tagCmd := fmt.Sprintf("docker --config ./ tag %s/%s:%s %s", appName, key, "latest", imageName)
+		tagCmd := fmt.Sprintf("docker --config ./docker-config tag %s/%s:%s %s", appName, key, "latest", imageName)
 		fmt.Printf("tagCmd: %s\n", tagCmd)
 
 		// Creating the proper pushCmd
-		pushCmd := fmt.Sprintf("--config ./ push %s", imageName)
+		pushCmd := fmt.Sprintf("--config ./docker-config push %s", imageName)
 		fmt.Printf("pushCmd: %s\n", pushCmd)
 
 		// Manipulating the service for no Build information but Image information
