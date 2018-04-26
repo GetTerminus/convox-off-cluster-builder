@@ -98,7 +98,6 @@ func main() {
 		default:
 			fmt.Printf("Error: %s\n", err.Error())
 		}
-
 		log.Fatal(err)
 	}
 
