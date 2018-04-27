@@ -62,7 +62,7 @@ The `convox build...` command picks up the image that has been built and pushed 
   * Find `ninja_dronebuilduser` in `1Password's` **SRE/Core** Vault
   * Copy **aws_access_key_id**'s value into **ninja_aws_access_key_id** in drone's Secrets UI
 * **ninja_aws_secret_access_key**
-  * Find `ninja_dronebuilduser` in `1Password`
+  * Find `ninja_dronebuilduser` in `1Password's` **SRE/Core** Vault
   * Copy **aws_secret_access_key_id**'s value into **ninja_aws_secret_access_key** in drone's Secrets UI
 * **ninja_repo**
   * Log into **AWS Ninja**
