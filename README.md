@@ -65,7 +65,7 @@ The `convox build...` command picks up the image that has been built and pushed 
   * Find `ninja_dronebuilduser` in `1Password`
   * Copy **aws_secret_access_key_id**'s value into **ninja_aws_secret_access_key** in drone's Secrets UI
 * **ninja_repo**
-  * Log into AWS Ninja
+  * Log into **AWS Ninja**
   * Select `Elastic Container Service`
   * Select `Repositories`
   * Filter for `offclusterbuild`
