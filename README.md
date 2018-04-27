@@ -60,13 +60,14 @@ The `convox build...` command picks up the image that has been built and pushed 
 # Notes for the members of the SRE team:
 Find all these settings in `1Password`
 * ninja_dronebuilduser **Used for running the build**
-  * Copy the value of aws_access_key_id into ninja_aws_access_key_id into drones Secrets UI
-  * Copy aws_secret_access_key_id into ninja_aws_secret_access_key in drone's Secrets UI
+  * Copy **aws_access_key_id**'s value into **ninja_aws_access_key_id** in drone's Secrets UI
+  * Copy **aws_secret_access_key_id**'s value into **ninja_aws_secret_access_key** in drone's Secrets UI
 * ninja_repo
   * Log into AWS Ninja
   * Select `Elastic Container Service`
-  * Select Repositories
+  * Select `Repositories`
   * Filter for `offclusterbuild`
-  * View Push Commands
+  * Click on `offclusterbuild`
+  * Click on `View Push Commands`
   * Copy a string like this from step #5: `119585928394.dkr.ecr.us-east-1.amazonaws.com/offclusterbuild`
-  * Paste it into ninja_repo's value
+  * Paste it into **ninja_repo**'s value in drone's Secrets UI
