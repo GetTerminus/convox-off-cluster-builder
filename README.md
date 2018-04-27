@@ -1,7 +1,6 @@
 # convox-off-build-off-cluster
 Tool to create Convox Builds off the Convox cluster.
 
-
 # Usage
 This is how we use it to do our build in CI and then import the build to the rack. (Using CirceCI in this case)
 The new convox-build-off-cluster tool has been overhauled and its functionality has been expanded.
@@ -57,4 +56,4 @@ commands:
   - cd ./scratch
   - convox build --app=<your app name>
 ```
-It picks up the image that has been built and pushed by the previous **convox-build-off-cluster** tool. The **convox** tool picks up the image and turns it into a release.
+The `convox build...` command picks up the image that has been built and pushed by the previous `convox-build-off-cluster` tool and turns it into a release.
