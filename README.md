@@ -10,28 +10,28 @@ For the new and improved version of the convox-build-off-cluster tool an adjuste
 # Configuration Example (_.drone.yml_)
 ```yaml
 convox_ninja:
-	image: getterminus/cci-build-golang:20180426  <-- latest image
-	environment:
-	  - AWS_REGION=us-east-1
-	secrets:
-	  - source: ninja_convox_host
-		target: convox_host
-	  - source: ninja_convox_password
-		target: convox_password
-	  - source: ninja_aws_account
-		target: aws_account
-	  - source: ninja_aws_access_key_id
-		target: aws_access_key_id
-	  - source: ninja_aws_secret_access_key
-		target: aws_secret_access_key
-	  - source: ninja_repo
-		target: repo
-	commands:
-	  - convox-build-off-cluster -app=<your app name> -description=${DRONE_COMMIT_BRANCH} -gitsha=${DRONE_COMMIT_SHA} -repo $${REPO}
-	  - mkdir scratch
-	  - mv ./docker-compose.convox.yml scratch/docker-compose.yml
-	  - cd ./scratch
-	  - convox build --app=<your app name>
+  image: getterminus/cci-build-golang:20180426  <-- latest image
+  environment:
+	- AWS_REGION=us-east-1
+  secrets:
+	- source: ninja_convox_host
+	  target: convox_host
+	- source: ninja_convox_password
+	  target: convox_password
+	- source: ninja_aws_account
+	  target: aws_account
+	- source: ninja_aws_access_key_id
+	  target: aws_access_key_id
+	- source: ninja_aws_secret_access_key
+	  target: aws_secret_access_key
+	- source: ninja_repo
+	  target: repo
+  commands:
+	- convox-build-off-cluster -app=<your app name> -description=${DRONE_COMMIT_BRANCH} -gitsha=${DRONE_COMMIT_SHA} -repo $${REPO}
+	- mkdir scratch
+	- mv ./docker-compose.convox.yml scratch/docker-compose.yml
+	- cd ./scratch
+	- convox build --app=<your app name>
 ```
 
 ## There are several secrets that need to be configured in the drone "Secrets" from the drone UI
