@@ -28,4 +28,4 @@ mv ./docker-compose.convox.yml scratch/docker-compose.yml
 cd ./scratch
 convox build --app=<your app name>
 ```
-The `convox build...` command picks up the `image:` section that has been created by the previous `convox-off-cluster-build` tool and turns it into a release.
+The `convox build...` command picks up the `image:` section and turns it into a release.
