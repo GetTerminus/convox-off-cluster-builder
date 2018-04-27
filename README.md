@@ -34,10 +34,10 @@ convox_ninja:
 
 ## Define these "Secrets" from the drone UI (Hamburger Menu -> Secrets)
 **These settings will need to be provided by a member of the SRE team**
-  * ninja_aws_account
-  * ninja_aws_access_key_id
-  * ninja_aws_secret_access_key
-  * ninja_repo
+  * **ninja_aws_account**
+  * **ninja_aws_access_key_id**
+  * **ninja_aws_secret_access_key**
+  * **ninja_repo**
 
 ## Additionally, set the AWS_REGION
 ```yaml
