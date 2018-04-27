@@ -10,7 +10,7 @@ For the new and improved version of the convox-build-off-cluster tool an adjuste
 # Configuration Example (_.drone.yml_)
 ```
 convox_ninja:
-  image: getterminus/cci-build-golang:20180426  <-- latest image
+  image: getterminus/cci-build-golang:20180426
   environment:
 	- AWS_REGION=us-east-1
   secrets:
@@ -34,20 +34,22 @@ convox_ninja:
 	- convox build --app=<your app name>
 ```
 
-## There are several secrets that need to be configured in the drone "Secrets" from the drone UI
+## Define these "Secrets" from the drone UI (Hamburger Menu -> Secrets)
 These settings will need to be provided by the SRE team
   * ninja_aws_account
   * ninja_aws_access_key_id
   * ninja_aws_secret_access_key
   * ninja_repo
 
-## Additionally to these mandatory "secrets" settings you will need to add the region for your service by an environment variable
+## Additionally, set the AWS_REGION
 ```yaml
 environment:
   - AWS_REGION=us-east-1
 ```
 Adjust for your region (as of now it's only 'us-east-1') as needed
 ## Last, but not least, there is one more thing to take care of
+### This step is a cane, but it is needed to get the RELEASEID.
+This step prevents convox from actually building the service yet again.
 ```yaml
 commands:
   - mkdir scratch
@@ -55,7 +57,4 @@ commands:
   - cd ./scratch
   - convox build --app=<your app name>
 ```
-### This step is a cane, but it is needed to get the RELEASEID.
-This step prevents convox from actually building the service yet again.
-
 It picks up the image that has been built and pushed by the previous **convox-build-off-cluster** tool. The **convox** tool picks up the image and turns it into a release.
