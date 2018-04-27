@@ -2,9 +2,8 @@
 Tool to create Convox Builds off the Convox cluster.
 
 # Usage
-This is how we use it to do our build in CI and then import the build to the rack. (Using CirceCI in this case)
-The new convox-build-off-cluster tool has been overhauled and its functionality has been expanded.
-For the new and improved version of the convox-build-off-cluster tool an adjusted version of the .drone.yml file is needed
+The new `convox-build-off-cluster` tool has been overhauled and its functionality has been expanded.
+For the new and improved version of the `convox-build-off-cluster` tool an adjusted version of the `.drone.yml` file is needed
 
 # Configuration Example (_.drone.yml_)
 ```
@@ -34,7 +33,7 @@ convox_ninja:
 ```
 
 ## Define these "Secrets" from the drone UI (Hamburger Menu -> Secrets)
-These settings will need to be provided by the SRE team
+**These settings will need to be provided by a member of the SRE team**
   * ninja_aws_account
   * ninja_aws_access_key_id
   * ninja_aws_secret_access_key
