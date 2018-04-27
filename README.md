@@ -58,7 +58,6 @@ commands:
 The `convox build...` command picks up the image that has been built and pushed by the previous `convox-build-off-cluster` tool and turns it into a release.
 
 # Notes for the members of the SRE team:
-Find all these settings in `1Password`
 * **ninja_aws_access_key_id**
   * Find `ninja_dronebuilduser` in `1Password`
   * Copy **aws_access_key_id**'s value into **ninja_aws_access_key_id** in drone's Secrets UI
