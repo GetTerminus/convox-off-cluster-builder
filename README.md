@@ -59,7 +59,7 @@ The `convox build...` command picks up the image that has been built and pushed 
 
 # Notes for the members of the SRE team:
 * **ninja_aws_access_key_id**
-  * Find `ninja_dronebuilduser` in `1Password`
+  * Find `ninja_dronebuilduser` in `1Password's **SRE/Core** Vault`
   * Copy **aws_access_key_id**'s value into **ninja_aws_access_key_id** in drone's Secrets UI
 * **ninja_aws_secret_access_key**
   * Find `ninja_dronebuilduser` in `1Password`
