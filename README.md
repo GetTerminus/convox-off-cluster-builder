@@ -1,14 +1,31 @@
-# convox-off-cluster-builder
-Tool to create Convox Builds off the Convox cluster. 
+# convox-off-cluster-build
+Tool to create Convox Builds off the Convox cluster.
 
+## Enhancements:
+The tool takes a `docker-compose.convox.yml` file and turns the `build:` section into an `image:` section to speed up subsequential builds.
+To achieve this `convox-off-cluster-build` builds the project specified in the `build:` section, creates an image from it and uploads the image into an ECR's Repository.
+It rewrites the `docker-compose.convox.yml` file and removes the `build:` section from it and substitutes it with an `image:` section that points to the ECR Repository and the correct image.
 
-# usage
+Note that a single ECR Repository can only host 1,000 images, so ensure that you have a Lifecycle Policy in place.
+See the `Lifecycle Policy` tab on AWS ECR / Repositories / YourRespository for details.
 
-This is how we use it to do our build in CI and then import the build to the rack. (Using CirceCI in this case)
+Subsequent builds will pick up the image and avoid a rebuild which is more time consuming than an image copy from AWS ECR to the destination.
 
-```makefile
-// Makefile
-./convox-build-off-cluster -app=service_name_here -compose-file=./docker-compose.convox.yml -description=${CIRCLE_BRANCH} -build-id=${CIRCLE_SHA1}
-convox builds import -f service_name_here-${CIRCLE_SHA1}.tgz --rack rack_name_here
+The new `convox-off-cluster-build` tool is intended to be part of a chain of commands that builds and deploys services.
+It will only become active if there is a `build:` section in the `docker-compose.convox.yml` file. If it sees an `image:` section for a given service, it simply skips this service.
 
+# Usage
+## Getting Help
+`convox-off-cluster-build -h` for help
+
+## Easy invocation
+`convox-off-cluster-build -app <your_application_name> -gitsha <add your current gitsha here> -region us-east-1 -defaultAccount 1234567890 -repo <your_repo>`
+
+## This tricky little step prevents convox from actually building the service yet again
+```sh
+mkdir scratch
+mv ./docker-compose.convox.yml scratch/docker-compose.yml
+cd ./scratch
+convox build --app=<your app name>
 ```
+The `convox build...` command picks up the `image:` section and turns it into a release.
