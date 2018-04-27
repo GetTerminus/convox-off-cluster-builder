@@ -8,7 +8,7 @@ The new convox-build-off-cluster tool has been overhauled and its functionality 
 For the new and improved version of the convox-build-off-cluster tool an adjusted version of the .drone.yml file is needed
 
 # Configuration Example (_.drone.yml_)
-```yaml
+```
 convox_ninja:
   image: getterminus/cci-build-golang:20180426  <-- latest image
   environment:
