@@ -1,4 +1,6 @@
 # convox-off-cluster-build
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGetTerminus%2Fconvox-off-cluster-builder.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FGetTerminus%2Fconvox-off-cluster-builder?ref=badge_shield)
+
 Tool to create Convox Builds off the Convox cluster.
 
 ## Enhancements:
@@ -29,3 +31,7 @@ cd ./scratch
 convox build --app=<your app name>
 ```
 The `convox build...` command picks up the `image:` section and turns it into a release.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGetTerminus%2Fconvox-off-cluster-builder.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FGetTerminus%2Fconvox-off-cluster-builder?ref=badge_large)
