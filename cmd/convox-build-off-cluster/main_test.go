@@ -1,42 +1,40 @@
-package main
+package main_test
 
 import (
-	"fmt"
 	"os"
-	"testing"
+
+	. "github.com/GetTerminus/convox-off-cluster-builder/cmd/convox-build-off-cluster"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestRunCommand(t *testing.T) {
-	if RunCommand("ls -l", true) == "" {
-		fmt.Printf("Stuff went wrong")
-		t.Error("expected string (inverted logic now)")
-	}
-}
+var _ = Describe("Main", func() {
 
-func TestGetGitHash(t *testing.T) {
-	if GetGitHash() == "" {
-		t.Error("expected a githash, got something else")
-	}
-}
+	It("should call RunCommand", func() {
+		Expect(RunCommand("ls -l", true)).NotTo(Equal(""))
+	})
 
-func TestGetRepo(t *testing.T) {
-	account := "1234567890"
-	region := "us-east-2"
-	if GetRepo(&account, &region) == "" {
-		t.Error("expected a repo. got something different")
-	}
-}
+	It("should call GetGitHash", func() {
+		Expect(GetGitHash()).NotTo(Equal(""))
+	})
 
-func TestGetRegion(t *testing.T) {
-	os.Setenv("AWS_REGION", "us-east-1")
-	if GetRegion() == "" {
-		t.Error("expected whatever but not nothing")
-	}
-}
+	It("should call GetRepo", func() {
+		account := "1234567890"
+		region := "us-east-2"
+		Expect(GetRepo(&account, &region)).NotTo(Equal(""))
+	})
 
-func TestInvalidGenerateBuildJSONFileCallNoManifest(t *testing.T) {
-	_, err := GenerateBuildJSONFile(nil, "appname", "buildid", "description")
-	if err == nil {
-		t.Errorf("GenerateBuildJSONFile() call failed")
-	}
-}
+	It("should call GetRegion", func() {
+		os.Setenv("AWS_REGION", "us-east-1")
+		Expect(GetRegion()).To(Equal("us-east-1"))
+	})
+
+	Describe("GenerateBuildJSONFile", func() {
+		It("should error when called with a nil manifest", func() {
+			_, err := GenerateBuildJSONFile(nil, "appname", "buildid", "description")
+			Expect(err).NotTo(BeNil())
+		})
+	})
+
+})
