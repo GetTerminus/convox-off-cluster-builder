@@ -90,7 +90,8 @@ func main() {
 	buildStream := output.Stream("local-build")
 
 	// Cycling through all service descriptions
-	if err = m.Build(".", appName, buildStream, opt); err != nil {
+	uniqueLocalAppName := appName + gitSHA
+	if err = m.Build(".", uniqueLocalAppName, buildStream, opt); err != nil {
 		switch (err).(type) {
 		case *os.PathError:
 			e := err.(*os.PathError)
@@ -116,7 +117,7 @@ func main() {
 
 		// Creating the proper tagCmd
 		// The 'latest' tagname is from the Build process and can't be changed w/o pain
-		tagCmd := fmt.Sprintf("docker tag %s/%s:%s %s", appName, key, "latest", imageName)
+		tagCmd := fmt.Sprintf("docker tag %s/%s:%s %s", uniqueLocalAppName, key, "latest", imageName)
 		fmt.Printf("tagCmd: %s\n", tagCmd)
 
 		// Creating the proper pushCmd
