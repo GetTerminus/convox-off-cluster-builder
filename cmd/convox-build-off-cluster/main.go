@@ -54,8 +54,8 @@ func main() {
 
 	// Mandatory flags to have; if any one is missing, stop
 	if repo == "" {
-		log.Printf("Please set ENV variables 'AWS_ACCOUNT' and 'AWS_REGION'")
-		log.Fatal("Stopped.")
+		flag.Usage()
+		log.Fatal("missing '-repo <repo>'")
 	}
 
 	// Mandatory: Application name
