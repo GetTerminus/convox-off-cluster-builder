@@ -1,6 +1,5 @@
 ## Master Status: 
-- [ ] Reviewed the Terraform Plan
-- [ ] I promise to make sure that master is green before merging into it. 
+- [ ] I promise to make sure that this PR is correct before merging it. 
 
 ### Minimal Risk Level:
 #### Is this behind a feature toggle?
