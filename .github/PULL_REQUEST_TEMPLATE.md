@@ -1,4 +1,3 @@
-## Master Status: 
 - [ ] I promise to make sure that this PR is correct before merging it. 
 
 ### Minimal Risk Level:
