@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      # we should rename our template files to not be .yaml before we enable this
+      # - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/antonbabenko/pre-commit-terraform.git
+    rev: v1.62.3
+    hooks:
+      - id: terraform_fmt
+# we should also look into the helm lint precommit, but it requires a special values file
